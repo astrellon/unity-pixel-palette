@@ -27,12 +27,22 @@ namespace PixelPalette
 
             for (var i = 0; i < this.Colours.Length; i++)
             {
-                var pos = i * 4;
                 var colour = this.Colours[i];
+                var pos = i * 4;
                 data[pos    ] = (byte)((colour >> 24) & 0xFF);
                 data[pos + 1] = (byte)((colour >> 16) & 0xFF);
                 data[pos + 2] = (byte)((colour >>  8) & 0xFF);
                 data[pos + 3] = (byte)(colour & 0xFF);
+            }
+
+            // Fill in gaps
+            for (var i = this.Colours.Length; i < size * size; i++)
+            {
+                var pos = i * 4;
+                data[pos] = 0xFF;
+                data[pos + 1] = 0x00;
+                data[pos + 2] = 0xFF;
+                data[pos + 3] = 0xFF;
             }
 
             result.LoadRawTextureData(data);

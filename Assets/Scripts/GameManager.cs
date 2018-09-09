@@ -9,19 +9,20 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        var colours = new int[]{unchecked((int)0xFF0000FF), 0x00FF00FF, 0x0000FFFF, unchecked((int)0xFFFFFFFF)};
-        var palette = new Palette(colours, 4, Vector3Int.one);
+        var colours = new int[]{unchecked((int)0xFF0000FF), 0x00FF00FF, 0x0000FFFF, unchecked((int)0xFFFFFFFF), 0x770000FF, 0x007700FF, 0x000077FF, 0x777777FF};
+        var palette = new Palette(colours, 4, new Vector3Int(2, 1, 1));
         this.TestPalette.texture = palette.CreateTexture();
 
         var data = new byte[]{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
         var image = new Image(4, 4, data, palette);
         this.TestImage.texture = image.CreateTexture();
 
+        var dimSizes = palette.ExtraDimSizes;
+        var paletteDims = new Vector4(palette.NumberOfBaseColours, dimSizes.x, dimSizes.y, dimSizes.z);
+
         var renderer = this.TestResult.GetComponent<Renderer>();
         renderer.material.SetTexture("_MainTex", this.TestImage.texture);
         renderer.material.SetTexture("_Palette", this.TestPalette.texture);
-        var dimSizes = palette.ExtraDimSizes;
-        var paletteDims = new Vector4(palette.NumberOfBaseColours, dimSizes.x, dimSizes.y, dimSizes.z);
         renderer.material.SetVector("_PaletteDims", paletteDims);
     }
 }
