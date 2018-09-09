@@ -46,7 +46,7 @@ namespace PixelPalette
             }
 
             result.LoadRawTextureData(data);
-            result.Apply();
+            result.Apply(false, true);
             return result;
         }
     }

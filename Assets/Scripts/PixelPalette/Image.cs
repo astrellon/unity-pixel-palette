@@ -29,7 +29,7 @@ namespace PixelPalette
             Array.Copy(this.PixelIndices, data, this.PixelIndices.Length);
 
             result.LoadRawTextureData(data);
-            result.Apply(false);
+            result.Apply(false, true);
             return result;
         }
     }

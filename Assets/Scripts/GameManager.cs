@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public UnityEngine.UI.RawImage TestPalette;
     public UnityEngine.UI.RawImage TestImage;
-    public GameObject TestResult;
+    public UnityEngine.UI.RawImage TestResult;
 
     private void Start()
     {
@@ -20,9 +20,8 @@ public class GameManager : MonoBehaviour
         var dimSizes = palette.ExtraDimSizes;
         var paletteDims = new Vector4(palette.NumberOfBaseColours, dimSizes.x, dimSizes.y, dimSizes.z);
 
-        var renderer = this.TestResult.GetComponent<Renderer>();
-        renderer.material.SetTexture("_MainTex", this.TestImage.texture);
-        renderer.material.SetTexture("_Palette", this.TestPalette.texture);
-        renderer.material.SetVector("_PaletteDims", paletteDims);
+        this.TestResult.material.SetTexture("_MainTex", this.TestImage.texture);
+        this.TestResult.material.SetTexture("_Palette", this.TestPalette.texture);
+        this.TestResult.material.SetVector("_PaletteDims", paletteDims);
     }
 }

@@ -55,11 +55,16 @@
             {
                 // sample the texture
                 float baseIndex = tex2D(_MainTex, i.uv).r * 255.0;
-                float index = baseIndex + _PaletteOffset.x + _PaletteOffset.y * _PaletteDims.x + _PaletteOffset.z * _PaletteDims.y + _PaletteOffset.w * _PaletteDims.z;
+                float index = baseIndex + 
+                    _PaletteOffset.x + 
+                    _PaletteOffset.y * _PaletteDims.x + 
+                    _PaletteOffset.z * _PaletteDims.y * _PaletteDims.x + 
+                    _PaletteOffset.w * _PaletteDims.z * _PaletteDims.y * _PaletteDims.x;
 
                 float u = index % _Palette_TexelSize.z;
                 float v = index * _Palette_TexelSize.x;
 
+                // Small offset to fix sampling at the edges of pixels.
                 fixed4 col = tex2D(_Palette, float2(u * _Palette_TexelSize.x + 0.1, v * _Palette_TexelSize.y + 0.1));
 
                 // apply fog
