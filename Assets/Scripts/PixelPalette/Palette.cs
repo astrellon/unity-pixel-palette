@@ -7,40 +7,49 @@ namespace PixelPalette
 {
     public class Palette
     {
-        public static readonly Color32 Empty = new Color32(255, 0, 255, 127);
-        public readonly Dictionary<int, Color32> Colours;
-        public readonly byte NumberOfBaseColours;
-        public readonly byte Dim1Size;
-        public readonly byte Dim2Size;
-        public readonly byte Dim3Size;
+        public readonly Dictionary<int, Colour> Colours;
+        public byte NumberOfBaseColours {get; private set;}
+        public byte Dim1Size {get; private set;}
+        public byte Dim2Size {get; private set;}
+        public byte Dim3Size {get; private set;}
 
-        public Palette(Dictionary<int, Color32> colours, byte numBaseColours, byte dim1Size = 1, byte dim2Size = 1, byte dim3Size = 1)
+        public Texture2D Texture {get; private set;}
+        public Dictionary<byte, byte> BaseColourMap {get; private set;}
+        public bool IsDirty {get; private set;}
+
+        public Palette(Dictionary<int, Colour> colours, byte numBaseColours, byte dim1Size = 1, byte dim2Size = 1, byte dim3Size = 1)
         {
             this.Colours = colours;
             this.NumberOfBaseColours = numBaseColours;
             this.Dim1Size = dim1Size;
             this.Dim2Size = dim2Size;
             this.Dim3Size = dim3Size;
+
+            this.IsDirty = true;
         }
 
         public Palette(byte numBaseColours, byte dim1Size = 1, byte dim2Size = 1, byte dim3Size = 1)
         {
-            this.Colours = new Dictionary<int, Color32>();
+            this.Colours = new Dictionary<int, Colour>();
             this.NumberOfBaseColours = numBaseColours;
             this.Dim1Size = dim1Size;
             this.Dim2Size = dim2Size;
             this.Dim3Size = dim3Size;
+            
+            this.IsDirty = true;
         }
 
-        public void SetColour(Color32 colour, byte baseColour, byte dim1 = 0, byte dim2 = 0, byte dim3 = 0)
+        public void SetColour(Colour colour, byte baseColour, byte dim1 = 0, byte dim2 = 0, byte dim3 = 0)
         {
             var index = dim3 << 24 | dim2 << 16 | dim1 << 8 | baseColour;
             this.Colours[index] = colour;
+
+            this.IsDirty = true;
         }
 
-        public Color32 GetColour(byte baseColour, byte dim1 = 0, byte dim2 = 0, byte dim3 = 0)
+        public Colour GetColour(byte baseColour, byte dim1 = 0, byte dim2 = 0, byte dim3 = 0)
         {
-            var result = Empty;
+            var result = Colour.Empty;
             var index = dim3 << 24 | dim2 << 16 | dim1 << 8 | baseColour;
 
             if (this.Colours.TryGetValue(index, out result))
@@ -52,7 +61,14 @@ namespace PixelPalette
             return result;
         }
 
-        public Dictionary<byte, byte> GetBaseWithNoGaps()
+        public void Update()
+        {
+            this.IsDirty = false;
+            this.BaseColourMap = this.GetBaseWithNoGaps();
+            this.Texture = this.CreateTexture();
+        }
+
+        private Dictionary<byte, byte> GetBaseWithNoGaps()
         {
             byte accum = 0;
             var result = new Dictionary<byte, byte>();
@@ -66,11 +82,9 @@ namespace PixelPalette
             return result;
         }
 
-        public Texture2D CreateTexture()
+        private Texture2D CreateTexture()
         {
-            var baseColourMap = this.GetBaseWithNoGaps();
-
-            var totalItems = baseColourMap.Count * this.Dim1Size * this.Dim2Size * this.Dim3Size;
+            var totalItems = this.BaseColourMap.Count * this.Dim1Size * this.Dim2Size * this.Dim3Size;
             var rootSize = Mathf.CeilToInt(Mathf.Sqrt(totalItems));
             var width = rootSize;
             var height = rootSize;
@@ -83,14 +97,13 @@ namespace PixelPalette
             for (byte z = 0; z < this.Dim3Size; z++)
             for (byte y = 0; y < this.Dim2Size; y++)
             for (byte x = 0; x < this.Dim1Size; x++)
-            //for (byte b = 0; b < baseColourMap.Count; b++)
-            foreach (var b in baseColourMap.Values)
+            foreach (var b in this.BaseColourMap.Values)
             {
                 var colour = this.GetColour(b, x, y, z);
-                data[pos    ] = colour.r;
-                data[pos + 1] = colour.g;
-                data[pos + 2] = colour.b;
-                data[pos + 3] = colour.a;
+                data[pos    ] = colour.Red;
+                data[pos + 1] = colour.Green;
+                data[pos + 2] = colour.Blue;
+                data[pos + 3] = colour.Alpha;
                 pos += 4;
             }
 
