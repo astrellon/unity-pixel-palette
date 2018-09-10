@@ -54,7 +54,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                float baseIndex = tex2D(_MainTex, i.uv).r * 255.0;
+                float baseIndex = round(tex2D(_MainTex, i.uv).r * 255.0);
                 float index = baseIndex + 
                     _PaletteOffset.x + 
                     _PaletteOffset.y * _PaletteDims.x + 
@@ -65,7 +65,7 @@
                 float v = index * _Palette_TexelSize.x;
 
                 // Small offset to fix sampling at the edges of pixels.
-                fixed4 col = tex2D(_Palette, float2(u * _Palette_TexelSize.x + 0.1, v * _Palette_TexelSize.y + 0.1));
+                fixed4 col = tex2D(_Palette, float2((u + _Palette_TexelSize.x * 0.5) * _Palette_TexelSize.x, (v + _Palette_TexelSize.y * 0.5) * _Palette_TexelSize.y));
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);

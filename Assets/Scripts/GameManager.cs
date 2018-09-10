@@ -9,16 +9,23 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        var colours = new int[]{unchecked((int)0xFF0000FF), 0x00FF00FF, 0x0000FFFF, unchecked((int)0xFFFFFFFF), 0x770000FF, 0x007700FF, 0x000077FF, 0x777777FF};
-        var palette = new Palette(colours, 4, new Vector3Int(2, 1, 1));
+        var palette = new Palette(255, 8, 8, 4);
+        palette.SetColour(new Color32(255, 0, 0, 255), 0);
+        palette.SetColour(new Color32(0, 255, 0, 255), 1);
+        palette.SetColour(new Color32(0, 0, 255, 255), 2);
+        palette.SetColour(new Color32(255, 255, 255, 255), 3);
+        
+        palette.SetColour(new Color32(127, 0, 0, 255), 0, 1);
+        palette.SetColour(new Color32(0, 127, 0, 255), 1, 1);
+        palette.SetColour(new Color32(0, 0, 127, 255), 2, 1);
+        palette.SetColour(new Color32(127, 127, 127, 255), 3, 1);
         this.TestPalette.texture = palette.CreateTexture();
 
         var data = new byte[]{0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
         var image = new Image(4, 4, data, palette);
         this.TestImage.texture = image.CreateTexture();
 
-        var dimSizes = palette.ExtraDimSizes;
-        var paletteDims = new Vector4(palette.NumberOfBaseColours, dimSizes.x, dimSizes.y, dimSizes.z);
+        var paletteDims = new Vector4(palette.NumberOfBaseColours, palette.Dim1Size, palette.Dim2Size, palette.Dim3Size);
 
         this.TestResult.material.SetTexture("_MainTex", this.TestImage.texture);
         this.TestResult.material.SetTexture("_Palette", this.TestPalette.texture);
