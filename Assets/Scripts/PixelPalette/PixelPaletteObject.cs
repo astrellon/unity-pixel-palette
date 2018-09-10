@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PixelPalette.Unity
 {
@@ -18,12 +19,6 @@ namespace PixelPalette.Unity
 
         private Material GetMaterial()
         {
-            var ui = this.GetComponent<UnityEngine.UI.Graphic>();
-            if (ui != null)
-            {
-                return ui.material;
-            }
-
             var renderer = this.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -45,10 +40,12 @@ namespace PixelPalette.Unity
             {
                 if (this.Palette.IsDirty)
                 {
+                    Debug.Log("palette is dirty");
                     this.Palette.Update();
                 }
                 if (this.Image.IsDirty)
                 {
+                    Debug.Log("image is dirty");
                     this.Image.Update();
                 }
 
@@ -68,7 +65,7 @@ namespace PixelPalette.Unity
             this.prevImageTexture = this.Image.Texture;
             this.prevPaletteTexture = this.Palette.Texture;
 
-            this.material.SetTexture("_MainTex", this.Image.Texture);
+            this.material.mainTexture = this.Image.Texture;
             this.material.SetTexture("_Palette", this.Palette.Texture);
             this.material.SetVector("_PaletteDims", paletteDims);
         }
